@@ -31,10 +31,10 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running Unit Tests...'
-                sh './mvnw test'
-            }
+            echo 'Running Unit Tests...'
+            sh 'mvn test'       // ✅ Use system Maven
         }
+    }
 
         stage('Build Image') {
             steps {
