@@ -7,7 +7,7 @@ pipeline {
     }
     environment {
         // Replace with your actual Docker Hub username
-        DOCKER_HUB_USER = 'your_dockerhub_username'
+        DOCKER_HUB_USER = 'oziii'
         IMAGE_NAME      = 'simple-java-app'
         IMAGE_TAG       = "${BUILD_NUMBER}"
         REGISTRY_CREDS  = 'dockerhub-creds' // The Jenkins credential ID
