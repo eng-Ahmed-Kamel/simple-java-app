@@ -1,8 +1,22 @@
-FROM maven:3.6.3-jdk-11-slim
-COPY src /app/src
-COPY pom.xml /app
-RUN mvn -f /app/pom.xml clean package
+# Stage 1: Build execution
+FROM maven:3.8.5-openjdk-17 AS builder
+WORKDIR /app
 
-RUN mv /app/target/*.jar app.jar
+# 1. Copy only the files needed to restore dependencies
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+# 2. Go offline to download and cache dependencies in this layer
+RUN ./mvnw dependency:go-offline -B
+
+# 3. Copy the actual source code (Changes here won't re-download dependencies)
+COPY src ./src
+RUN ./mvnw clean package -DskipTests
+
+# Stage 2: Minimal runtime image
+FROM openjdk:17-alpine
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+EXPOSE 7777
+ENTRYPOINT ["java", "-jar", "app.jar"]
