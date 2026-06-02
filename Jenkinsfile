@@ -24,8 +24,8 @@ pipeline {
         stage('Build App') {
             steps {
                 echo 'Building Java Application using Maven...'
-                // Using the Maven wrapper if present, otherwise use 'mvn'
-                sh './mvnw clean package -DskipTests' 
+                // Using the Maven wrapper if present, otherwise use 'mvn.'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
