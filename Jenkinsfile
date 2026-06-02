@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    // 1. Tell Jenkins to use your managed Maven installation
+    tools {
+        maven 'M3916' // Must exactly match the Name in Manage Jenkins -> Tools
+    }
     environment {
         // Replace with your actual Docker Hub username
         DOCKER_HUB_USER = 'your_dockerhub_username'
