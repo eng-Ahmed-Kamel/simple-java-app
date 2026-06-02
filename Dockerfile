@@ -1,22 +1,17 @@
-# Stage 1: Build execution
 FROM maven:3.8.5-openjdk-17 AS builder
 WORKDIR /app
 
-# 1. Copy only the files needed to restore dependencies
-COPY mvnw .
-COPY .mvn .mvn
+# Copy pom.xml first (for layer caching)
 COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# 2. Go offline to download and cache dependencies in this layer
-RUN ./mvnw dependency:go-offline -B
-
-# 3. Copy the actual source code (Changes here won't re-download dependencies)
+# Copy source code
 COPY src ./src
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
-# Stage 2: Minimal runtime image
-FROM openjdk:17-alpine
+# Runtime stage
+FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
-EXPOSE 7777
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
